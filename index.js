@@ -10,6 +10,7 @@ const bodyParser            = require("body-parser"),
       seedDB                = require("./seed"),
       methodOverride        = require("method-override"),
       flash                 = require("connect-flash"),
+      cors                  = require("cors")
 	  app                   = express();
 
 const campgroundRoutes = require("./routes/campgrounds"),
@@ -26,7 +27,9 @@ mongoose.connect(url , {
 .catch(err => console.log(err.message));
 
 app.set("view engine" , "ejs");
+app.use(cors());
 app.use(express.static(`${__dirname}/public`));
+app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended : true}));
 app.use(methodOverride("_method"));
 app.use(flash());
@@ -65,9 +68,9 @@ app.use("/campgrounds/:id/comments" , commentRoutes);
 
 
 //configuring the port settings for heroku hosting
-let port = process.env.PORT || 3000;
+let port = process.env.PORT || 8080;
 
 //Start the server
 app.listen(port , () => {
-	console.log("Server has started on port 3000!");
+	console.log("Server has started on port 8080!");
 });
