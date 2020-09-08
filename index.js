@@ -3,12 +3,9 @@ const bodyParser            = require("body-parser"),
       express               = require("express"),
       Campground            = require("./models/Campground"),
       Comment               = require("./models/Comment"),
-      User                  = require("./models/User");
-      passport              = require("passport"),
-      localStrategy         = require("passport-local"),
-      passportLocalMongoose = require("passport-local-mongoose"),
-      seedDB                = require("./seed"),
-      methodOverride        = require("method-override"),
+      User                  = require("./models/User"),
+      bcrypt                = require("bcrypt"),
+      jwt                   = require("jsonwebtoken")
       flash                 = require("connect-flash"),
       cors                  = require("cors")
 	  app                   = express();
@@ -26,36 +23,18 @@ mongoose.connect(url , {
 .then(() => console.log("Connected to DB!"))
 .catch(err => console.log(err.message));
 
-app.set("view engine" , "ejs");
 app.use(cors());
-app.use(express.static(`${__dirname}/public`));
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended : true}));
-app.use(methodOverride("_method"));
 app.use(flash());
 
-//creating new campground and comment each time server starts
-//seedDB();
-
-//setting everything for Auth usage
-app.use(require("express-session")({
-    secret : "Samyak is not a good programmer!",
-    resave : false,
-    saveUninitialized : false
-}));
-app.use(passport.initialize());
-app.use(passport.session());
-passport.use(new localStrategy(User.authenticate()));
-passport.serializeUser(User.serializeUser());
-passport.deserializeUser(User.deserializeUser());
-
 //passing the data of flash messages and the current user data to all the templates
-app.use( (req, res, next) => {
-    res.locals.currentUser = req.user;
-    res.locals.success = req.flash("success");
-    res.locals.error = req.flash("error");
-    next();
-})
+// app.use( (req, res, next) => {
+//     res.locals.currentUser = req.user;
+//     res.locals.success = req.flash("success");
+//     res.locals.error = req.flash("error");
+//     next();
+// })
 
 
 app.use("/" , indexRoutes);

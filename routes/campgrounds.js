@@ -1,7 +1,10 @@
+const verifyToken = require("../middleware");
+const User = require("../models/User");
+const { findById } = require("../models/User");
+
 const express = require("express"),
       router = express.Router(),
-      Campground = require("../models/Campground"),
-      middleware = require("../middleware");
+      Campground = require("../models/Campground")
         
 
 //Campground page
@@ -37,13 +40,31 @@ router.post("/",  async (req, res) => {
 })
 
 //campgrounds show page
-router.get("/:id" , (req, res) =>{
+router.get("/:id" ,verifyToken, async (req, res) =>{
+
+    let loggedInUser
+
+    if(req.user){
+        loggedInUser = await User.findById(req.user.id)
+    }
+    
     Campground.findById(req.params.id)
      .populate("comments")
      .exec((err , foundCampground) => {
         //  res.render("campgrounds/show" , {campground : foundCampground})
-        res.json(foundCampground)
+        if(req.user){
+            res.json({
+                foundCampground,
+                loggedInUser
+            })
+        }
+        else{
+            res.json({
+                foundCampground
+            })
+        }
      })
+
 });
 
 //edit campground route

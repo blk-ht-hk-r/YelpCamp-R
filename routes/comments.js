@@ -1,21 +1,17 @@
-const middlewareObject = require("../middleware");
-
 const express = require("express"),
       router  = express.Router({mergeParams : true}),
       Campground = require("../models/Campground"),
-      Comment   = require("../models/Comment"),
-      middleware = require("../middleware");
-
+      Comment   = require("../models/Comment")
 
 //new comment addition show page route
-router.get("/new" , middleware.isLoggedIn,  (req , res) => {
+router.get("/new" ,  (req , res) => {
     Campground.findById(req.params.id)
     .then(foundCampground => res.render("comments/new" , {campground : foundCampground}))
     .catch(console.log)
 })
 
 //new comment post route
-router.post("/" , middleware.isLoggedIn, (req , res) => {
+router.post("/" , (req , res) => {
     Comment.create(req.body.comment)
      .then(newComment => {
          newComment.author.id = req.user._id;
@@ -34,7 +30,7 @@ router.post("/" , middleware.isLoggedIn, (req , res) => {
 })
 
 //Edit Comment form route
-router.get("/:comment_id/edit", middleware.checkCommentOwnership , async (req, res) => {
+router.get("/:comment_id/edit" , async (req, res) => {
     try{
         let foundComment = await Comment.findById(req.params.comment_id)
         res.render("comments/edit", {campground_id : req.params.id , comment : foundComment})
@@ -45,7 +41,7 @@ router.get("/:comment_id/edit", middleware.checkCommentOwnership , async (req, r
 })
 
 //Comment Upgrade route
-router.put("/:comment_id", middleware.checkCommentOwnership,  async (req, res) =>{
+router.put("/:comment_id",  async (req, res) =>{
     try{
         await Comment.findByIdAndUpdate(req.params.comment_id, req.body.comment)
         req.flash("success", "Your Comment was Updated Successfully!")
@@ -56,7 +52,7 @@ router.put("/:comment_id", middleware.checkCommentOwnership,  async (req, res) =
 })
 
 //Destroy Comment route
-router.delete("/:comment_id", middleware.checkCommentOwnership, async (req, res) => {
+router.delete("/:comment_id",  async (req, res) => {
     try{
         await Comment.findByIdAndRemove(req.params.comment_id)
         req.flash("success", "Your Comment was removed Successfully!")
