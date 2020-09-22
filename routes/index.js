@@ -62,8 +62,16 @@ router.get("/getUser", async (req, res) => {
       loggedInUser = await User.findById(payload.id);
       res.json(loggedInUser);
    } catch (error) {
-      console.log(error);
-      res.sendStatus(403).end();
+      console.log(error.message)
+      if(error.message === "jwt expired"){
+          res.sendStatus(401).end();
+      }
+      else if(error.message === "invalid token"){
+          res.sendStatus(403).end()
+      }
+      else{
+          res.sendStatus(500).end()
+      }
    }
 });
 //Exporting the Landing page and Auth Routes
