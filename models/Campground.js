@@ -7,7 +7,8 @@ const campgroundSchema = new mongoose.Schema({
     price : String,
     body : String,
     author : { id : {type : mongoose.Schema.Types.ObjectId, ref  : "User"} , username : String},
-    comments : [{ type : mongoose.Schema.Types.ObjectId , ref : "Comment" }]
+    comments : [{ type : mongoose.Schema.Types.ObjectId , ref : "Comment" }],
+	createdAt  : {type : Date , default : Date.now}
 })
 
 campgroundSchema.pre("remove", async function(){
